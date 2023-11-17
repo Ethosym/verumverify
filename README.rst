@@ -21,21 +21,33 @@ Example Code:
 
     $ verify --hash_id 7708e5e103f71fd65af14a33747755836690545b8873f228dd43bbf17ee42a21
 
-    Verify Authenticity of Hash: 7708e5e103f71fd65af14a33747755836690545b8873f228dd43bbf17ee42a21
+    Verify Authenticity of Hash: 7a06d927e5f16f96d22f681b6ceaf6c8b12aab14523012bd3c215c7f11b19ae2
 
     Locating and retrieving files...OK
-    Loading public key files...OK
     Loading data and signature files...OK
+    Loading public key files...OK
+
+            Video 'A bright and sunny day' was recording on
+            an Android T2Q on Samsung
+            called Chris's Android
+            at around 2023-11-16 23:05:54.
+
     Verifying Timestamps Authenticity
-    | 2023-11-12 11:25:35 |...OK
+    2023-11-16 23:05:54...OK
     Verifying Sensor Authenticity
-    | ccee4e51-daff-4a2f-9dd2-c495252813a0 |...OK
-    | b5bb2ee2-5ed8-42b5-ae90-31660b8c77d4 |...OK
-    | 5bf8ba9d-7c50-4be7-8f6a-f0fe8d2ee5df |...OK
+    | TEMPERATURE |...OK
+    | PROXIMITY |...OK
+    | ACCELEROMETER |...OK
+    | GPS |...OK
+    | GYROSCOPE |...OK
+    | HUMIDITY |...OK
+    | LIGHT |...OK
+    | DATE |...OK
+    | PRESSURE |...OK
     Verifying Recording Authenticity
-    | c080b0d4-bf06-44f4-9618-c8f1a9b4ca6b |...OK
+    | recording |...OK
     Verifying Device Authenticity
-    | 8872846e-530b-48e3-8f3b-2bf02806e327 |...OK
+    | device |...OK
 
 
 How It Works

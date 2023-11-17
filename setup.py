@@ -5,9 +5,9 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="verumverify",
-    version="1.0.0",
-    author="Calvin DeBoer",
-    author_email="cgdeboer@gmail.com",
+    version="0.0.1",
+    author="Ethosymn",
+    author_email="ethosymn.verum.service@gmail.com",
     description=("Verifies the authenticity of content published "
                  "on the Verum Journo portal."),
     long_description=long_description,

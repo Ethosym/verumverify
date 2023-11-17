@@ -49,6 +49,11 @@ def main(hash_id, url, id, zipfile, host, verbose, preserve):
         return
     status_svc.success()
 
+    status_svc.start("Loading data and signature files")
+    file_map = retrieval_svc.gather()
+    status_svc.prog()
+    status_svc.success()
+
     status_svc.start("Loading public key files")
     device_key = retrieval_svc.load_key("device.pem")
     verum_key = retrieval_svc.load_key("verum.pem")
@@ -59,49 +64,68 @@ def main(hash_id, url, id, zipfile, host, verbose, preserve):
         status_svc.fail()
         return
 
-    status_svc.start("Loading data and signature files")
-    file_map = retrieval_svc.gather()
-    status_svc.prog()
-    status_svc.success()
+    _data = file_map['timestamps']
+    tsr = retrieval_svc.load_file(_data['tsr'])
+    time_from_tsr = crypto_svc.time_from_tsr(tsr)
+
+    device = retrieval_svc.extract_data(file_map, "device")
+    recording = retrieval_svc.extract_data(file_map, "recording")
+    variant = device['variant']
+
+    click.secho(f"""
+        Video '{recording["name"]}' was recording on
+        an {variant.title()} {device[variant]['device'].upper()} on {device[variant]['brand'].title()}
+        called {device['name']}
+        at around {time_from_tsr}.
+    """)
 
     for category, _data in file_map.items():
-        status_svc.start(f"Verifying {category.title()} Authenticity", nl=True)
-        if category == "timestamps":
-            tsq = retrieval_svc.load_file(_data['tsq'])
-            tsr = retrieval_svc.load_file(_data['tsr'])
-            time_from_tsr = crypto_svc.time_from_tsr(tsr)
-            is_authentic = crypto_svc.verify_ts(tsr, tsq)
-            status_svc.start(f"{time_from_tsr}")
-            status_svc.prog()
-            if is_authentic:
-                status_svc.success()
-            else:
-                status_svc.fail()
-
-        else:
-            for uuid, packet in _data.items():
-                status_svc.start(f"| {uuid} |")
-
-                is_authentic_device = crypto_svc.verified(
-                    retrieval_svc.load_file(packet['data']),
-                    retrieval_svc.load_file(packet['device']),
-                    device_key,
-                )
-                status_svc.prog(cnt=1)
-                is_authentic_verum = crypto_svc.verified(
-                    retrieval_svc.load_file(packet['data']),
-                    retrieval_svc.load_file(packet['verum']),
-                    verum_key,
-                )
-                status_svc.prog(cnt=1)
-                if is_authentic_device and is_authentic_verum:
-                    status_svc.prog(cnt=1)
-                    status_svc.success()
-                else:
-                    status_svc.fail()
+        c_data = retrieval_svc.extract_data(file_map, category)
+        _verify(category, _data, device_key, verum_key, c_data)
 
     if not preserve:
         retrieval_svc.clear()
+
+
+def _verify(category, _data, device_key, verum_key, c_data):
+    status_svc.start(f"Verifying {category.title()} Authenticity", nl=True)
+    if category == "timestamps":
+        tsq = retrieval_svc.load_file(_data['tsq'])
+        tsr = retrieval_svc.load_file(_data['tsr'])
+        time_from_tsr = crypto_svc.time_from_tsr(tsr)
+        is_authentic = crypto_svc.verify_ts(tsr, tsq)
+        status_svc.start(f"{time_from_tsr}")
+        status_svc.prog()
+        if is_authentic:
+            status_svc.success()
+        else:
+            status_svc.fail()
+
+    else:
+        for uuid, packet in _data.items():
+            _cat_name = (category
+                         if category in {"recording", "device"} else
+                         c_data[uuid]['channel'])
+
+            status_svc.start(f"| {_cat_name} |")
+
+            is_authentic_device = crypto_svc.verified(
+                retrieval_svc.load_file(packet['data']),
+                retrieval_svc.load_file(packet['device']),
+                device_key,
+            )
+            status_svc.prog(cnt=1)
+            is_authentic_verum = crypto_svc.verified(
+                retrieval_svc.load_file(packet['data']),
+                retrieval_svc.load_file(packet['verum']),
+                verum_key,
+            )
+            status_svc.prog(cnt=1)
+            if is_authentic_device and is_authentic_verum:
+                status_svc.prog(cnt=1)
+                status_svc.success()
+            else:
+                status_svc.fail()
 
 
 if __name__ == '__main__':

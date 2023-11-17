@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import zipfile
@@ -108,3 +109,19 @@ def load_file(fn):
 
 def clear():
     shutil.rmtree(BASE_DIR, ignore_errors=True)
+
+
+def extract_data(file_map, key):
+    data = file_map.get(key, {})
+    keys = list(data.keys())
+    if key in {"device", "recording"}:
+        with open(data[keys[0]]['data']) as raw:
+            return json.load(raw)
+    elif key == "sensor":
+        _data = {}
+        for x in keys:
+            with open(data[x]['data']) as raw:
+                _data[x] = json.load(raw)
+        return _data
+    else:
+        return {}
