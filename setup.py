@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="verumverify",
-    version="0.0.1",
+    version="0.0.2",
     author="Ethosymn",
     author_email="ethosymn.verum.service@gmail.com",
     description=("Verifies the authenticity of content published "
@@ -23,7 +23,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         'console_scripts': [
-            'verify = verumverify.main:main',
+            'verumverify = verumverify.main:main',
         ],
     },
     classifiers=(

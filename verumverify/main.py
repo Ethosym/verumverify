@@ -1,6 +1,6 @@
 import click
 
-from . import crypto_svc, retrieval_svc, status_svc
+from . import crypto_svc, retrieval_svc, status_svc, video_svc
 
 
 @click.command(no_args_is_help=True)
@@ -10,6 +10,8 @@ from . import crypto_svc, retrieval_svc, status_svc
               help='A url of a Verum file.')
 @click.option('--id',
               help='ID if a recording from Verum.')
+@click.option('--videofile',
+              help='A raw recording MP4 file.')
 @click.option('--zipfile',
               help='local path to a zip file from a Verum recording.')
 @click.option('--host', default="https://verumjourno.com",
@@ -18,9 +20,9 @@ from . import crypto_svc, retrieval_svc, status_svc
               help="More information out")
 @click.option('-p', '--preserve', is_flag=True,
               help="Preserve downloaded artifacts")
-def main(hash_id, url, id, zipfile, host, verbose, preserve):
+def main(hash_id, url, id, zipfile, videofile, host, verbose, preserve):
     """Verify the cryptographic authenticity of a Verum recording."""
-    if not any((hash_id, url, id, zipfile)):
+    if not any((hash_id, url, id, zipfile, videofile)):
         return
 
     if hash_id:
@@ -38,6 +40,15 @@ def main(hash_id, url, id, zipfile, host, verbose, preserve):
                          nl=True)
         status_svc.start("Locating and retrieving files")
         fetched = retrieval_svc.get_by_url(url)
+    elif videofile:
+        status_svc.start(f"\nVerify Authenticity of Video: {videofile}\n",
+                         nl=True)
+        status_svc.start("Computing Video File Hash")
+        status_svc.prog()
+        status_svc.success()
+        hash_id = video_svc.compute_hash_from_path(videofile)
+        status_svc.start(f"Locating and retrieving files for hash: {hash_id}")
+        fetched = retrieval_svc.get_by_hash_id(hash_id, host)
     else:
         status_svc.start(f"\nVerify Authenticity of Zip File: {zipfile}\n",
                          nl=True)
@@ -46,6 +57,7 @@ def main(hash_id, url, id, zipfile, host, verbose, preserve):
     status_svc.prog()
     if not fetched:
         status_svc.fail()
+        status_svc.start(f"No Video Matched for Hash: {hash_id}", nl=True)
         return
     status_svc.success()
 
@@ -77,6 +89,8 @@ def main(hash_id, url, id, zipfile, host, verbose, preserve):
         an {variant.title()} {device[variant]['device'].upper()} on {device[variant]['brand'].title()}
         called {device['name']}
         at around {time_from_tsr}.
+
+        The Hash ID is: {recording['hash_id']}
     """)
 
     for category, _data in file_map.items():

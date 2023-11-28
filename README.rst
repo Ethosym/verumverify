@@ -19,7 +19,7 @@ Example Code:
 
 .. code-block::
 
-    $ verify --hash_id 7708e5e103f71fd65af14a33747755836690545b8873f228dd43bbf17ee42a21
+    $ verumverify --hash_id 7708e5e103f71fd65af14a33747755836690545b8873f228dd43bbf17ee42a21
 
     Verify Authenticity of Hash: 7a06d927e5f16f96d22f681b6ceaf6c8b12aab14523012bd3c215c7f11b19ae2
 
@@ -52,7 +52,7 @@ Example Code:
 
 How It Works
 ---------------
-Verum Verify provides a single command line callable, :code:`verify` that takes one of
+Verum Verify provides a single command line callable, :code:`verumverify` that takes one of
 of the following inputs:
 
 hash_id:
@@ -67,7 +67,10 @@ url:
 zipfile:
     A zipfile of all recorded sensor data (downloadable from verumjourno.com)
 
-The :code:`verify` command will verify the authenticity of the recording, the device that
+videofile:
+    A original full-resolution MP4 video
+
+The :code:`verumverify` command will verify the authenticity of the recording, the device that
 made the recording, all sensor data associated with the recording, and an external timestamp
 of when the recording occurred.
 
@@ -84,9 +87,10 @@ To install Verum Verify, use:
 .. code-block:: bash
 
     $ pip install verumverify
-    $ verify --hash_id <hash>
 
+    $ verumverify --hash_id <hash>
 
+    $ verumverify --videofile /path/to/your/video.mp4
 
 Documentation
 -------------
