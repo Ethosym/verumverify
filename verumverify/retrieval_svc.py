@@ -21,8 +21,8 @@ def get_by_hash_id(hash_id: str, host: str):
             return get_by_uuid(data['guid'], host)
     except Exception:
         status_svc.prog()
-        click.secho("Error: ", fg="red", nl=False)
-        click.secho(f"This URL is invalid: {uri}", nl=False)
+        click.secho("ERROR: ", fg="red")
+        click.secho(f"This URL is invalid: {uri}")
 
 
 def get_by_uuid(uuid: str, host: str):
@@ -50,8 +50,8 @@ def fetch_zip(uri):
             return True
     except Exception:
         status_svc.prog()
-        click.secho("Error: ", fg="red", nl=False)
-        click.secho(f"This URL is invalid: {uri}", nl=False)
+        click.secho("ERROR", fg="red")
+        click.secho(f"This URL is invalid: {uri}")
 
 
 def get_by_url(url: str):

@@ -47,18 +47,21 @@ def main(hash_id, url, id, zipfile, videofile, host, verbose, preserve):
         status_svc.prog()
         status_svc.success()
         hash_id = video_svc.compute_hash_from_path(videofile)
-        status_svc.start(f"Locating and retrieving files for hash: {hash_id}")
+        status_svc.start(f"Verify Authenticity of Hash: {hash_id}",
+                         nl=True)
+        status_svc.start("Locating and retrieving files")
         fetched = retrieval_svc.get_by_hash_id(hash_id, host)
     else:
         status_svc.start(f"\nVerify Authenticity of Zip File: {zipfile}\n",
                          nl=True)
         status_svc.start("Locating and retrieving files")
         fetched = retrieval_svc.get_by_zip(zipfile)
-    status_svc.prog()
+
     if not fetched:
-        status_svc.fail()
-        status_svc.start(f"No Video Matched for Hash: {hash_id}", nl=True)
+        status_svc.start("\nVerification aborted.\n", nl=True)
         return
+
+    status_svc.prog()
     status_svc.success()
 
     status_svc.start("Loading data and signature files")
@@ -99,6 +102,8 @@ def main(hash_id, url, id, zipfile, videofile, host, verbose, preserve):
 
     if not preserve:
         retrieval_svc.clear()
+
+    click.secho("\nVerification Complete\n", fg="green")
 
 
 def _verify(category, _data, device_key, verum_key, c_data):
